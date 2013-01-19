@@ -394,6 +394,17 @@ goog.scope(function() {
         }
       }
       else {
+      	// Testing scaletofit - Nathan
+      	if (dom.hasClass(childNode, "scaletofit")) {
+      		var offsetWidth = childNode.parentNode.offsetWidth;
+      		var imageHeight = (childNode.getAttribute("height") ||  childNode.getAttribute("data-height")) ;
+        	var imageWidth = (childNode.getAttribute("width") || childNode.getAttribute("data-width"))   ;
+			var ratio = (imageHeight && imageWidth ? imageHeight/imageWidth : 1);
+			//alert(imageHeight + " " + imageWidth);
+			childNode.setAttribute("width",offsetWidth );
+			childNode.setAttribute("height", offsetWidth * ratio );
+      	}
+      	// End
         child = new Block(childNode, baseLineHeight, indices, !!isFallback);
         if (isBlock && !owner.containsFallback) {
           owner.containsFallback = child.containsFallback;
