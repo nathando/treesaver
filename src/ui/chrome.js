@@ -383,7 +383,8 @@ goog.scope(function() {
     ACTIVE: 'treesaver.active',
     IDLE: 'treesaver.idle',
     SIDEBARACTIVE: 'treesaver.sidebaractive',
-    SIDEBARINACTIVE: 'treesaver.sidebarinactive'
+    SIDEBARINACTIVE: 'treesaver.sidebarinactive',
+    PAGESCHANGED: 'treesaver.chromepageschanged'
   };
 
   /**
@@ -424,7 +425,7 @@ goog.scope(function() {
     // fetch them again
     // Article changed and TOC changed will affect nav indicators
     case ArticleManager.events.PAGESCHANGED:
-      return this.selectPagesDelayed();
+      return this.selectPagesDelayed(true);
 
     case Index.events.UPDATED:
       this.updateTOCDelayed();
@@ -1560,9 +1561,11 @@ goog.scope(function() {
   /**
    * Run selectPages on a delay
    * @private
+   * @param {boolean=} isPageChanged
    */
-  Chrome.prototype.selectPagesDelayed = function() {
-    scheduler.queue(this.selectPages, [], 'selectPages', this);
+  Chrome.prototype.selectPagesDelayed = function(isPageChanged) {
+  	var pageChanged = (isPageChanged ? isPageChanged : false );
+    scheduler.queue(this.selectPages, [pageChanged], 'selectPages', this);
   };
 
   /**
@@ -1578,7 +1581,7 @@ goog.scope(function() {
    * including DOM insertion
    * @private
    */
-  Chrome.prototype.selectPages = function() {
+  Chrome.prototype.selectPages = function(fireEvent) {
     this.stopDelayedFunctions();
 
     // Populate the pages
@@ -1599,6 +1602,9 @@ goog.scope(function() {
     this.updateNextArticleState();
     this.updatePreviousPageState();
     this.updatePreviousArticleState();
+    
+    if (fireEvent == true)
+    	events.fireEvent(document, Chrome.events.PAGESCHANGED);
   };
 
   /**
