@@ -1087,6 +1087,22 @@ goog.scope(function() {
     // TODO: Automatically query?
     ArticleManager.currentPageIndex = -1;
   };
+  
+  /**
+   * Set current document index - Temp while access to pos within page not avalaible
+   * @private
+   */
+  ArticleManager.setCurrentDocumentIndex = function(index) {
+  	ArticleManager.currentDocumentIndex = index;
+  };
+  
+  /**
+   * Set current page index - Temp while access to pos within page not avalaible
+   * @private
+   */
+  ArticleManager.setCurrentPageIndex = function(index) {
+  	ArticleManager.currentPageIndex = index;
+  };
 
   /**
    * Generate a loading page
@@ -1132,4 +1148,6 @@ goog.scope(function() {
   goog.exportSymbol('treesaver.getCurrentDocument', ArticleManager.getCurrentDocument);
   goog.exportSymbol('treesaver.getDocumentCount', ArticleManager.getDocumentCount);
   goog.exportSymbol('treesaver.goToDocumentByURL', ArticleManager.goToDocumentByURL);
+  goog.exportSymbol('treesaver.setCurrentPageIndex', ArticleManager.setCurrentPageIndex);
+  goog.exportSymbol('treesaver.setCurrentDocumentIndex', ArticleManager.setCurrentDocumentIndex);
 });
