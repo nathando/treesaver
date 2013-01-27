@@ -76,7 +76,7 @@ goog.scope(function() {
 
 
     // Watch for dom ready
-    if (/complete|loaded/.test(document.readyState)) {
+    if (/complete|loaded|interactive/.test(document.readyState)) {
       // DOM is already ready, call directly
       treesaver.domReady();
     }
