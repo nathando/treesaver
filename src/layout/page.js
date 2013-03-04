@@ -69,6 +69,11 @@ goog.scope(function() {
     ).forEach(function(el) {
       treesaver.template.expand(el, el.innerHTML, content.doc.meta);
     });
+    
+    dom.querySelectorAll('.column', this.node).forEach(function(columnNode, i) 
+    {
+    	treesaver.layout.Page.adjustCenter(columnNode);
+    });
 
     // Containers
     dom.querySelectorAll('.container', this.node).forEach(function(containerNode, i) {
@@ -80,6 +85,8 @@ goog.scope(function() {
         figure = /** @type {!treesaver.layout.Figure} */ (content.figures[figureIndex]);
         success = treesaver.layout.Page.fillContainer(containerNode, figure, mapping,
           content.lineHeight);
+        
+        treesaver.layout.Page.adjustCenter(containerNode);
 
         // Account for the figure we used
         if (success) {
@@ -217,6 +224,23 @@ goog.scope(function() {
   Page.prototype.active;
 
   /**
+   * @param {!Element} element
+   */
+  Page.adjustCenter = function(element)
+  {
+  	var offsetParent = /** @type {!Element} */ (element.parentNode);
+	if (dom.hasClass(offsetParent, 'cols-1')) {
+		if (dom.hasClass(element, 'column') ||
+        	dom.hasClass(element, 'container') ||
+        	dom.hasClass(element, 'group')) {
+	    	// Set the column left margin - absolute position
+	    	dimensions.setCssPx(element, 'padding-left', (dimensions.getOffsetWidth(offsetParent) -  dimensions.getOffsetWidth(element))/2);
+		}
+	}
+
+  }
+
+  /**
    * @param {!Element} container
    * @param {!treesaver.layout.Figure} figure
    * @param {!treesaver.layout.Grid.ContainerMap} map
@@ -226,10 +250,11 @@ goog.scope(function() {
   Page.fillContainer = function(container, figure, map,
       lineHeight) {
     var size, figureSize,
-        containerHeight, sibling,
+        containerHeight, sibling, offsetParent,
         metrics,
         maxContainerHeight,
-        anchoredTop = true;
+        anchoredTop = true,
+        singleColumn = false;
 
     size = map.size;
     figureSize = map.figureSize;
@@ -310,7 +335,7 @@ goog.scope(function() {
       dom.addClass(container, 'scroll');
       Scrollable.initDom(container);
     }
-
+    
     // Go through this containers siblings, adjusting their sizes
     sibling = container;
     while ((sibling = sibling.nextSibling)) {
@@ -321,11 +346,14 @@ goog.scope(function() {
 
       // Cast for compiler
       sibling = /** @type {!Element} */ (sibling);
-
+      
       // Don't touch fixed items
       if (dom.hasClass(sibling, 'fixed')) {
         continue;
       }
+      
+      
+      debug.info('Single Column' + singleColumn + sibling.parentNode);
 
       if (dom.hasClass(sibling, 'column') ||
           dom.hasClass(sibling, 'container') ||
@@ -353,6 +381,7 @@ goog.scope(function() {
               dimensions.getOffsetHeight(sibling.offsetParent) -
               (dimensions.getOffsetTop(sibling) + dimensions.getOffsetHeight(sibling)) + containerHeight);
           }
+          
         }
       }
     }

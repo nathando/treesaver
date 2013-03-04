@@ -296,7 +296,7 @@ goog.scope(function() {
       }
     }
 
-    if (e.type === treesaver.history.events.POPSTATE) {
+    if (e.type === treesaver.history.events.POPSTATE && treesaver.historyEnable) {
       ArticleManager.onPopState(/** @type {!Event} */ (e));
       return;
     }
@@ -990,19 +990,22 @@ goog.scope(function() {
       ArticleManager.currentPageIndex = -1;
 
       // Update the browser URL, but only if we are supposed to
-      if (!noHistory) {
-        treesaver.history.pushState({
-          index: index,
-          url: url,
-          position: pos
-        }, doc.meta['title'], path);
-      }
-      else {
-        treesaver.history.replaceState({
-          index: index,
-          url: url,
-          position: pos
-        }, doc.meta['title'], path);
+      if (treesaver.historyEnable == true)
+      {
+	      if (!noHistory) {
+	        treesaver.history.pushState({
+	          index: index,
+	          url: url,
+	          position: pos
+	        }, doc.meta['title'], path);
+	      }
+	      else {
+	        treesaver.history.replaceState({
+	          index: index,
+	          url: url,
+	          position: pos
+	        }, doc.meta['title'], path);
+	      }
       }
 
       // Fire the ARTICLECHANGED event
@@ -1044,19 +1047,22 @@ goog.scope(function() {
     }
 
     // Update the browser URL, but only if we are supposed to
-    if (!noHistory) {
-      treesaver.history.pushState({
-        index: index,
-        url: url,
-        position: pos
-      }, doc.meta['title'] || '', path);
-    }
-    else {
-      treesaver.history.replaceState({
-        index: index,
-        url: url,
-        position: pos
-      }, doc.meta['title'] || '', path);
+    if (treesaver.historyEnable == true)
+    {
+	    if (!noHistory) {
+	      treesaver.history.pushState({
+	        index: index,
+	        url: url,
+	        position: pos
+	      }, doc.meta['title'] || '', path);
+	    }
+	    else {
+	      treesaver.history.replaceState({
+	        index: index,
+	        url: url,
+	        position: pos
+	      }, doc.meta['title'] || '', path);
+	    }
     }
 
     // Fire events
@@ -1103,6 +1109,17 @@ goog.scope(function() {
   ArticleManager.setCurrentPageIndex = function(index) {
   	ArticleManager.currentPageIndex = index;
   };
+  
+  
+  /**
+   * Enable/disable history by treesaver
+   * @private
+   * @param {boolean=} enable
+   */
+  ArticleManager.setHistoryEnable = function(enable) {
+  	treesaver.historyEnable = enable;
+  };
+  
 
   /**
    * Generate a loading page
@@ -1150,4 +1167,10 @@ goog.scope(function() {
   goog.exportSymbol('treesaver.goToDocumentByURL', ArticleManager.goToDocumentByURL);
   goog.exportSymbol('treesaver.setCurrentPageIndex', ArticleManager.setCurrentPageIndex);
   goog.exportSymbol('treesaver.setCurrentDocumentIndex', ArticleManager.setCurrentDocumentIndex);
+  goog.exportSymbol('treesaver.setHistoryEnable', ArticleManager.setHistoryEnable);
+  goog.exportSymbol('treesaver.goToNextDocument', ArticleManager.nextDocument);
+  goog.exportSymbol('treesaver.goToPreviousDocument', ArticleManager.previousDocument);
+  goog.exportSymbol('treesaver.goToPreviousPage', ArticleManager.previousPage);
+  goog.exportSymbol('treesaver.goToNextPage', ArticleManager.nextPage);
+  
 });

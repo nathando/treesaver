@@ -74,7 +74,10 @@ goog.scope(function() {
       ArticleManager = treesaver.ui.ArticleManager,
       Index = treesaver.ui.Index,
       Scrollable = treesaver.ui.Scrollable;
-
+  
+  // Global variables
+  Chrome.enableTouch = true;
+  	
   /**
    * List of required capabilities for this Chrome
    *
@@ -394,7 +397,7 @@ goog.scope(function() {
     Index.events.UPDATED,
     ArticleManager.events.PAGESCHANGED,
     ArticleManager.events.DOCUMENTCHANGED,
-    'keydown',
+    //'keydown',
     'click',
     'mousewheel',
     'DOMMouseScroll'
@@ -440,16 +443,28 @@ goog.scope(function() {
       return this.mouseOver(e);
 
     case 'touchstart':
-      return this.touchStart(e);
+    	if (Chrome.enableTouch)
+    		return this.touchStart(e);
+      	else
+      		return this.touchDisabled(e);
 
     case 'touchmove':
-      return this.touchMove(e);
+    	if (Chrome.enableTouch)
+    		return this.touchMove(e);
+      	else
+      		return this.touchDisabled(e);
 
     case 'touchend':
-      return this.touchEnd(e);
+    	if (Chrome.enableTouch)
+    		return this.touchEnd(e);
+      	else
+      		return this.touchDisabled(e);
 
     case 'touchcancel':
-      return this.touchCancel(e);
+    	if (Chrome.enableTouch)
+    		return this.touchCancel(e);
+      	else
+      		return this.touchDisabled(e);
 
     case 'keydown':
       return this.keyDown(e);
@@ -822,6 +837,16 @@ goog.scope(function() {
    * @type {Object}
    */
   Chrome.prototype.touchData_;
+
+  /**
+   * Handle the touch-disabled event
+   * @param {!Event} e
+   */
+  Chrome.prototype.touchDisabled = function(e) {
+  	 // Do all the handling ourselves
+    e.stopPropagation();
+    e.preventDefault();
+  }
 
   /**
    * Handle the touchstart event
@@ -1815,7 +1840,28 @@ goog.scope(function() {
       }
     }, this);
   };
-
+	
+  /**
+   * Activate/Deactivate the default touch handlers 
+   * 
+   * @param {boolean=} enableTouch
+   */
+  Chrome.setEnableTouch = function(enableTouch) {
+  	Chrome.enableTouch = enableTouch;
+  }
+  
+  /**
+   * Activate/Deactivate the default touch handlers 
+   * 
+   * @param {boolean=} enableKeyDown
+   */
+  Chrome.setEnableKeyDown = function(enableKeyDown) {
+  	if (enableKeyDown)
+  		events.addListener(document, 'keydown', Chrome.prototype.keyDown);
+  	else
+  		events.removeListener(document, 'keydown', Chrome.prototype.keyDown);
+  }
+  
   /**
    * Find the first chrome that meets the current requirements
    *
@@ -1848,5 +1894,9 @@ goog.scope(function() {
       return '[Chrome: ]';
     };
   }
+  
+  // Expose functions
+  goog.exportSymbol('treesaver.setEnableTouch', Chrome.setEnableTouch);
+  goog.exportSymbol('treesaver.setEnableKeyDown', Chrome.setEnableKeyDown);
 });
 
